@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 
 const StyledForm = styled.form`
@@ -28,17 +29,50 @@ const SubmitButton = styled.button`
 `;
 
 const Form = () => {
+	const initialState = {
+		url: '',
+		imageFile: '',
+	};
+	const [formState, setFormState] = useState(initialState);
+
+	function handleChange(event) {
+		setFormState((prevState) => {
+			return { ...prevState, [event.target.id]: event.target.value };
+		});
+	}
+
+	function handleFileUpload(event) {
+		setFormState((prevState) => {
+			return { ...prevState, imageFile: event.target.files[0] };
+		});
+	}
+
+	function handleSubmit(event) {
+		event.preventDefault();
+		const data = new FormData();
+		const imageData = formState.imageFile;
+		data.append('data', imageData);
+		data.append('url', formState.url);
+	}
+
 	return (
-		<StyledForm>
+		<StyledForm encType='multipart/form-data' action='' onSubmit={handleSubmit}>
 			<label htmlFor='url'>URL: </label>
 			<input
 				type='text'
 				id='url'
 				placeholder='Paste your URL here'
 				name='url'
+				onChange={handleChange}
 			/>
 			<label htmlFor='cat-image'>File upload: </label>
-			<input type='file' id='cat-image' name='cat-image' />
+			<input
+				type='file'
+				id='imageFile'
+				name='cat-image'
+				size='60'
+				onChange={handleFileUpload}
+			/>
 			<SubmitButton type='submit'>Submit</SubmitButton>
 		</StyledForm>
 	);
